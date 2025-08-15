@@ -1,0 +1,48 @@
+// MBT measurement function - no collapse!
+function mbt_measurement(psi_r, psi_i, obs) {
+    // Calculate local curvature (second derivative)
+    let curvature = new Array(N);
+    for (let i = 1; i < N-1; i++) {
+        curvature[i] = (psi_r[i+1] - 2*psi_r[i] + psi_r[i-1]) / (dx*dx);
+    }
+    curvature[0] = curvature[1];
+    curvature[N-1] = curvature[N-2];
+    
+    // "Measurement" = field sampling its own curvature
+    let measurement_integrand = 0;
+    for (let i = 0; i < N; i++) {
+        const probability_density = psi_r[i]*psi_r[i] + psi_i[i]*psi_i[i];
+        measurement_integrand += probability_density * curvature[i] * obs[i] * dx;
+    }
+    
+    return measurement_integrand;
+}
+
+// Evolution with MBT motion dynamics
+function evolve_mbt(psi_r, psi_i) {
+    let new_psi_r = new Array(N);
+    let new_psi_i = new Array(N);
+    
+    for (let i = 1; i < N-1; i++) {
+        // Motion field Laplacian
+        const lap_r = (psi_r[i+1] - 2*psi_r[i] + psi_r[i-1]) / (dx*dx);
+        const lap_i = (psi_i[i+1] - 2*psi_i[i] + psi_i[i-1]) / (dx*dx);
+        
+        // MBT evolution: motion continues, no collapse
+        new_psi_r[i] = psi_r[i] + dt * (0.7 * lap_i);
+        new_psi_i[i] = psi_i[i] - dt * (0.7 * lap_r);
+    }
+    
+    // Boundary conditions
+    new_psi_r[0] = new_psi_r[1];
+    new_psi_r[N-1] = new_psi_r[N-2];
+    new_psi_i[0] = new_psi_i[1];
+    new_psi_i[N-1] = new_psi_i[N-2];
+    
+    return [new_psi_r, new_psi_i];
+}
+
+console.log("✅ MBT functions defined:");
+console.log("   • mbt_measurement() - field observes its own curvature");
+console.log("   • evolve_mbt() - continuous motion field evolution");
+console.log("   • NO collapse mechanism - quantum mysteries eliminated!");
