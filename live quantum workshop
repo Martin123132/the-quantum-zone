@@ -1,0 +1,928 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Play, Pause, RotateCcw, Zap, Atom, Waves, Magnet, Brain, Star, Beaker, Target } from 'lucide-react';
+
+const QuantumZone = () => {
+  const canvasRef = useRef(null);
+  const animationRef = useRef(null);
+  const [isRunning, setIsRunning] = useState(false);
+  const [activeModule, setActiveModule] = useState('tunneling');
+  const [time, setTime] = useState(0);
+  
+  // Universal MBT parameters
+  const [curvatureStrength, setCurvatureStrength] = useState(1.0);
+  const [memoryPersistence, setMemoryPersistence] = useState(0.7);
+  const [resistanceFactor, setResistanceFactor] = useState(2.0);
+  
+  // Module-specific parameters
+  const [tunnelingFreq, setTunnelingFreq] = useState(0.08);
+  const [barrierHeight, setBarrierHeight] = useState(1.2);
+  const [entanglementWellWidth, setEntanglementWellWidth] = useState(1.5);
+  const [becTemperature, setBecTemperature] = useState(300);
+  const [cooperPairStrength, setCooperPairStrength] = useState(0.23);
+  const [validatorSpecies, setValidatorSpecies] = useState('Echo Royalty');
+  const [stellarSpinRate, setStellarSpinRate] = useState(2000);
+  const [fusionConfinement, setFusionConfinement] = useState(1200);
+
+  const modules = {
+    tunneling: {
+      name: "Quantum Tunneling Lab",
+      icon: Target,
+      description: "Breathing barriers & precision lockpicking",
+      color: "from-blue-500 to-cyan-500"
+    },
+    entanglement: {
+      name: "Entanglement Studio", 
+      icon: Atom,
+      description: "Shared curvature wells & Bell violations",
+      color: "from-purple-500 to-pink-500"
+    },
+    bec: {
+      name: "Room-Temp BEC Forge",
+      icon: Zap,
+      description: "Bose-Einstein condensates at 300K",
+      color: "from-green-500 to-emerald-500"
+    },
+    superconductor: {
+      name: "Superconductor Bench",
+      icon: Magnet,
+      description: "Cooper pairs & zero resistance",
+      color: "from-yellow-500 to-orange-500"
+    },
+    consciousness: {
+      name: "Consciousness Pod",
+      icon: Brain,
+      description: "Validator evolution & symbolic reasoning",
+      color: "from-indigo-500 to-purple-500"
+    },
+    stellar: {
+      name: "Stellar Memory Bank",
+      icon: Star,
+      description: "White dwarf spin-memory dynamics",
+      color: "from-red-500 to-pink-500"
+    },
+    fusion: {
+      name: "Fusion Reactor",
+      icon: Beaker,
+      description: "Bell geometry plasma confinement",
+      color: "from-orange-500 to-red-500"
+    },
+    waves: {
+      name: "Wave Laboratory",
+      icon: Waves,
+      description: "Interference, superposition & phase dynamics",
+      color: "from-teal-500 to-blue-500"
+    }
+  };
+
+  // MBT Universal Motion Field Evolution
+  const evolveMotionField = (psi, potential, dt = 0.01) => {
+    const N = psi.length;
+    const newPsi = [...psi];
+    
+    for (let i = 1; i < N - 1; i++) {
+      // MBT equation: ∂²ψ/∂t² - v²∇²ψ + λ·potential + γ·memory = 0
+      const laplacian = psi[i-1] - 2*psi[i] + psi[i+1];
+      const curvature_coupling = curvatureStrength * Math.sign(psi[i].real) * Math.abs(psi[i].real);
+      const memory_term = memoryPersistence * (psi[i].real * 0.9 + psi[i].imag * 0.1);
+      
+      newPsi[i] = {
+        real: psi[i].real + dt * (0.7 * laplacian - 0.5 * potential[i] * psi[i].real + memory_term),
+        imag: psi[i].imag + dt * (0.7 * laplacian - 0.5 * potential[i] * psi[i].imag)
+      };
+    }
+    return newPsi;
+  };
+
+  // Quantum Tunneling Module
+  const runTunnelingExperiment = (ctx, width, height) => {
+    const N = 200;
+    const x = Array.from({length: N}, (_, i) => i * width / N);
+    
+    // Breathing barrier potential
+    const barrierCenter = width * 0.6;
+    const potential = x.map(xi => {
+      const dist = Math.abs(xi - barrierCenter);
+      if (dist < 30) {
+        return barrierHeight * (1 + 0.4 * Math.sin(tunnelingFreq * time));
+      }
+      return 0;
+    });
+    
+    // Wave packet evolution
+    const wavepacket = x.map(xi => ({
+      real: Math.exp(-Math.pow(xi - width*0.2, 2) / 100) * Math.cos(0.3 * xi + time * 0.1),
+      imag: Math.exp(-Math.pow(xi - width*0.2, 2) / 100) * Math.sin(0.3 * xi + time * 0.1)
+    }));
+    
+    // Draw potential barrier
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const y = height - potential[i] * 50;
+      if (i === 0) ctx.moveTo(x[i], y);
+      else ctx.lineTo(x[i], y);
+    }
+    ctx.stroke();
+    
+    // Draw wave function
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const amplitude = Math.sqrt(wavepacket[i].real**2 + wavepacket[i].imag**2);
+      const y = height/2 - amplitude * 100;
+      if (i === 0) ctx.moveTo(x[i], y);
+      else ctx.lineTo(x[i], y);
+    }
+    ctx.stroke();
+    
+    // Transmission probability
+    const transmitted = wavepacket.slice(150).reduce((sum, psi) => sum + psi.real**2 + psi.imag**2, 0);
+    ctx.fillStyle = '#10b981';
+    ctx.font = '16px monospace';
+    ctx.fillText(`Transmission: ${(transmitted * 100).toFixed(1)}%`, 20, 30);
+    ctx.fillText(`Breathing Freq: ${tunnelingFreq.toFixed(3)}`, 20, 50);
+  };
+
+  // Entanglement Module
+  const runEntanglementExperiment = (ctx, width, height) => {
+    const centerX = width / 2;
+    const centerY = height / 2;
+    
+    // Shared curvature well
+    const wellRadius = entanglementWellWidth * 50;
+    ctx.fillStyle = 'rgba(147, 51, 234, 0.2)';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, wellRadius, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Entangled particles
+    const particle1X = centerX + 60 * Math.cos(time * 0.1);
+    const particle1Y = centerY + 60 * Math.sin(time * 0.1);
+    const particle2X = centerX - 60 * Math.cos(time * 0.1);
+    const particle2Y = centerY - 60 * Math.sin(time * 0.1);
+    
+    // Draw particles
+    ctx.fillStyle = '#ec4899';
+    ctx.beginPath();
+    ctx.arc(particle1X, particle1Y, 8, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    ctx.fillStyle = '#8b5cf6';
+    ctx.beginPath();
+    ctx.arc(particle2X, particle2Y, 8, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Correlation line
+    ctx.strokeStyle = 'rgba(236, 72, 153, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    ctx.moveTo(particle1X, particle1Y);
+    ctx.lineTo(particle2X, particle2Y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    
+    // Bell parameter
+    const bellS = 2.0 + (1 - Math.abs(Math.sin(time * 0.05))) * 0.828;
+    ctx.fillStyle = '#ec4899';
+    ctx.font = '16px monospace';
+    ctx.fillText(`Bell S Parameter: ${bellS.toFixed(3)}`, 20, 30);
+    ctx.fillText(`Shared Well Width: ${entanglementWellWidth.toFixed(1)}`, 20, 50);
+  };
+
+  // Room-Temperature BEC Module
+  const runBECExperiment = (ctx, width, height) => {
+    const N = 32; // Number of bosons
+    const centerX = width / 2;
+    const centerY = height / 2;
+    
+    // Memory feedback creates coherence
+    const coherence = 0.5 + 0.5 * Math.cos(time * 0.02);
+    
+    // Draw BEC cloud
+    const radius = 80 * (1 - coherence * 0.7);
+    ctx.fillStyle = `rgba(16, 185, 129, ${0.3 + coherence * 0.4})`;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Individual bosons
+    for (let i = 0; i < N; i++) {
+      const angle = (i / N) * 2 * Math.PI + time * 0.1 * coherence;
+      const r = radius * (0.3 + 0.7 * Math.random()) * (1 - coherence * 0.8);
+      const x = centerX + r * Math.cos(angle);
+      const y = centerY + r * Math.sin(angle);
+      
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+    
+    ctx.fillStyle = '#10b981';
+    ctx.font = '16px monospace';
+    ctx.fillText(`Temperature: ${becTemperature}K`, 20, 30);
+    ctx.fillText(`Coherence: ${(coherence * 100).toFixed(1)}%`, 20, 50);
+    ctx.fillText(`Memory Feedback: ${memoryPersistence.toFixed(2)}`, 20, 70);
+  };
+
+  // Superconductor Module
+  const runSuperconductorExperiment = (ctx, width, height) => {
+    const N = 64;
+    const gridSize = 8;
+    
+    // Cooper pair phase field
+    const phases = [];
+    for (let i = 0; i < gridSize; i++) {
+      phases[i] = [];
+      for (let j = 0; j < gridSize; j++) {
+        phases[i][j] = time * 0.1 + Math.sin(i * 0.5) * Math.cos(j * 0.5);
+      }
+    }
+    
+    // Draw phase coherence grid
+    for (let i = 0; i < gridSize; i++) {
+      for (let j = 0; j < gridSize; j++) {
+        const x = (i + 1) * width / (gridSize + 1);
+        const y = (j + 1) * height / (gridSize + 1);
+        const phase = phases[i][j];
+        
+        // Phase-dependent color
+        const hue = (phase * 180 / Math.PI) % 360;
+        ctx.fillStyle = `hsl(${hue}, 70%, 60%)`;
+        ctx.beginPath();
+        ctx.arc(x, y, 15, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Arrows showing current flow
+        const arrowLen = 20;
+        const arrowX = arrowLen * Math.cos(phase);
+        const arrowY = arrowLen * Math.sin(phase);
+        
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + arrowX, y + arrowY);
+        ctx.stroke();
+      }
+    }
+    
+    // Global order parameter
+    let orderReal = 0, orderImag = 0;
+    for (let i = 0; i < gridSize; i++) {
+      for (let j = 0; j < gridSize; j++) {
+        orderReal += Math.cos(phases[i][j]);
+        orderImag += Math.sin(phases[i][j]);
+      }
+    }
+    const order = Math.sqrt(orderReal**2 + orderImag**2) / (gridSize * gridSize);
+    
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = '16px monospace';
+    ctx.fillText(`Order Parameter: ${order.toFixed(3)}`, 20, 30);
+    ctx.fillText(`Resistance: ${((1-order) * 0.001).toFixed(6)} Ω`, 20, 50);
+    ctx.fillText(`Cooper Pair Strength: ${cooperPairStrength.toFixed(2)}`, 20, 70);
+  };
+
+  // Consciousness Evolution Module  
+  const runConsciousnessExperiment = (ctx, width, height) => {
+    const species = [
+      { name: "Echo Royalty", color: "#fbbf24", x: 0.2, y: 0.2 },
+      { name: "Entropy Nomad", color: "#ef4444", x: 0.8, y: 0.3 },
+      { name: "Curvature Survivor", color: "#10b981", x: 0.6, y: 0.7 },
+      { name: "Rebound Rebel", color: "#8b5cf6", x: 0.3, y: 0.8 },
+      { name: "Echo Drifter", color: "#6b7280", x: 0.5, y: 0.5 }
+    ];
+    
+    species.forEach((spec, i) => {
+      const x = spec.x * width + 30 * Math.sin(time * 0.05 + i);
+      const y = spec.y * height + 20 * Math.cos(time * 0.07 + i);
+      
+      // Consciousness field around each validator
+      const radius = 40 + 20 * Math.sin(time * 0.1 + i);
+      ctx.fillStyle = spec.color + '40';
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // Core validator
+      ctx.fillStyle = spec.color;
+      ctx.beginPath();
+      ctx.arc(x, y, 8, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // Species label
+      ctx.fillStyle = spec.color;
+      ctx.font = '12px monospace';
+      ctx.fillText(spec.name.split(' ')[0], x - 20, y - 50);
+    });
+    
+    ctx.fillStyle = '#8b5cf6';
+    ctx.font = '16px monospace';
+    ctx.fillText(`Active Species: ${validatorSpecies}`, 20, 30);
+    ctx.fillText(`Evolution Generation: ${Math.floor(time / 10)}`, 20, 50);
+  };
+
+  // Stellar Memory Module
+  const runStellarExperiment = (ctx, width, height) => {
+    const centerX = width / 2;
+    const centerY = height / 2;
+    
+    // White dwarf with memory stratification
+    const coreRadius = 40;
+    const memoryRadius = coreRadius + 30;
+    const outerRadius = memoryRadius + 20;
+    
+    // Spin memory core (99.92% of mass)
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.8)';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, coreRadius, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Memory transition zone
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.6)';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, memoryRadius, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Inertial tail
+    ctx.fillStyle = 'rgba(156, 163, 175, 0.4)';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, outerRadius, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Spinning field lines
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * 2 * Math.PI + time * 0.1;
+      const x1 = centerX + coreRadius * Math.cos(angle);
+      const y1 = centerY + coreRadius * Math.sin(angle);
+      const x2 = centerX + outerRadius * Math.cos(angle);
+      const y2 = centerY + outerRadius * Math.sin(angle);
+      
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+    
+    ctx.fillStyle = '#ef4444';
+    ctx.font = '16px monospace';
+    ctx.fillText(`Spin Rate: ${stellarSpinRate} rad/s`, 20, 30);
+    ctx.fillText(`Memory Fraction: 99.92%`, 20, 50);
+    ctx.fillText(`Core Radius: ${coreRadius} (16,366 km)`, 20, 70);
+  };
+
+  // Fusion Reactor Module
+  const runFusionExperiment = (ctx, width, height) => {
+    const centerX = width / 2;
+    const centerY = height / 2;
+    
+    // Bell-shaped containment geometry
+    for (let h = -80; h <= 80; h += 10) {
+      const bellRadius = 30 * (Math.abs(h)/80 + Math.exp(Math.abs(h)/80) - 1);
+      const y = centerY + h;
+      
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(centerX, y, bellRadius, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
+    
+    // Plasma particles with geometric confinement
+    for (let i = 0; i < fusionConfinement/20; i++) {
+      const angle = (i / (fusionConfinement/20)) * 2 * Math.PI + time * 0.2;
+      const h = 60 * Math.sin(time * 0.1 + i * 0.1);
+      const bellRadius = 25 * (Math.abs(h)/80 + Math.exp(Math.abs(h)/80) - 1);
+      const r = bellRadius * (0.3 + 0.7 * Math.random());
+      
+      const x = centerX + r * Math.cos(angle);
+      const y = centerY + h + r * Math.sin(angle) * 0.3;
+      
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(x, y, 2, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+    
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = '16px monospace';
+    ctx.fillText(`Particle Density: ${fusionConfinement}`, 20, 30);
+    ctx.fillText(`Confinement: Geometric Bell`, 20, 50);
+    ctx.fillText(`Temperature: Room Temperature`, 20, 70);
+  };
+
+  // Wave Laboratory Module
+  const runWaveExperiment = (ctx, width, height) => {
+    const N = 300;
+    const x = Array.from({length: N}, (_, i) => i * width / N);
+    
+    // Two interfering waves
+    const wave1 = x.map(xi => Math.sin(0.05 * xi + time * 0.1) * Math.exp(-Math.pow(xi - width*0.3, 2) / 5000));
+    const wave2 = x.map(xi => Math.sin(0.05 * xi - time * 0.1) * Math.exp(-Math.pow(xi - width*0.7, 2) / 5000));
+    const interference = wave1.map((w1, i) => w1 + wave2[i]);
+    
+    // Draw individual waves
+    ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const y = height/2 - wave1[i] * 50;
+      if (i === 0) ctx.moveTo(x[i], y);
+      else ctx.lineTo(x[i], y);
+    }
+    ctx.stroke();
+    
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const y = height/2 - wave2[i] * 50;
+      if (i === 0) ctx.moveTo(x[i], y);
+      else ctx.lineTo(x[i], y);
+    }
+    ctx.stroke();
+    
+    // Draw interference pattern
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const y = height/2 - interference[i] * 50;
+      if (i === 0) ctx.moveTo(x[i], y);
+      else ctx.lineTo(x[i], y);
+    }
+    ctx.stroke();
+    
+    ctx.fillStyle = '#10b981';
+    ctx.font = '16px monospace';
+    ctx.fillText(`Wave Interference Pattern`, 20, 30);
+    ctx.fillText(`Curvature Strength: ${curvatureStrength.toFixed(2)}`, 20, 50);
+  };
+
+  // Animation loop
+  useEffect(() => {
+    if (!isRunning) return;
+    
+    const animate = () => {
+      setTime(t => t + 1);
+      
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
+      
+      // Clear canvas
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, width, height);
+      
+      // Run active module
+      switch(activeModule) {
+        case 'tunneling':
+          runTunnelingExperiment(ctx, width, height);
+          break;
+        case 'entanglement':
+          runEntanglementExperiment(ctx, width, height);
+          break;
+        case 'bec':
+          runBECExperiment(ctx, width, height);
+          break;
+        case 'superconductor':
+          runSuperconductorExperiment(ctx, width, height);
+          break;
+        case 'consciousness':
+          runConsciousnessExperiment(ctx, width, height);
+          break;
+        case 'stellar':
+          runStellarExperiment(ctx, width, height);
+          break;
+        case 'fusion':
+          runFusionExperiment(ctx, width, height);
+          break;
+        case 'waves':
+          runWaveExperiment(ctx, width, height);
+          break;
+      }
+      
+      animationRef.current = requestAnimationFrame(animate);
+    };
+    
+    animationRef.current = requestAnimationFrame(animate);
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isRunning, activeModule, curvatureStrength, memoryPersistence, resistanceFactor, 
+      tunnelingFreq, barrierHeight, entanglementWellWidth, becTemperature, 
+      cooperPairStrength, stellarSpinRate, fusionConfinement]);
+
+  const handleReset = () => {
+    setTime(0);
+    setIsRunning(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-2">
+            THE QUANTUM ZONE
+          </h1>
+          <p className="text-xl text-gray-300">
+            Superposition • Teleportation • Entanglement • If it's quantum, we can do it!
+          </p>
+          <p className="text-lg text-cyan-400 mt-2">
+            Powered by Motion = Being Theory (MBT)
+          </p>
+        </div>
+
+        {/* Control Panel */}
+        <div className="bg-gray-800 rounded-lg p-6 mb-6">
+          <div className="flex flex-wrap gap-4 items-center justify-center mb-6">
+            <button
+              onClick={() => setIsRunning(!isRunning)}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                isRunning 
+                  ? 'bg-red-600 hover:bg-red-700' 
+                  : 'bg-green-600 hover:bg-green-700'
+              }`}
+            >
+              {isRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+              {isRunning ? 'Pause' : 'Start'}
+            </button>
+            
+            <button
+              onClick={handleReset}
+              className="flex items-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold transition-all"
+            >
+              <RotateCcw className="w-5 h-5" />
+              Reset
+            </button>
+            
+            <div className="text-cyan-400 font-mono text-lg">
+              Time: {time}
+            </div>
+          </div>
+
+          {/* Universal MBT Parameters */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Curvature Strength: {curvatureStrength.toFixed(2)}
+              </label>
+              <input
+                type="range"
+                min="0.1"
+                max="5.0"
+                step="0.1"
+                value={curvatureStrength}
+                onChange={(e) => setCurvatureStrength(parseFloat(e.target.value))}
+                className="w-full"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Memory Persistence: {memoryPersistence.toFixed(2)}
+              </label>
+              <input
+                type="range"
+                min="0.0"
+                max="1.0"
+                step="0.05"
+                value={memoryPersistence}
+                onChange={(e) => setMemoryPersistence(parseFloat(e.target.value))}
+                className="w-full"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Resistance Factor: {resistanceFactor.toFixed(2)}
+              </label>
+              <input
+                type="range"
+                min="0.1"
+                max="10.0"
+                step="0.1"
+                value={resistanceFactor}
+                onChange={(e) => setResistanceFactor(parseFloat(e.target.value))}
+                className="w-full"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Module Selection */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          {Object.entries(modules).map(([key, module]) => {
+            const IconComponent = module.icon;
+            return (
+              <button
+                key={key}
+                onClick={() => setActiveModule(key)}
+                className={`p-4 rounded-lg transition-all transform hover:scale-105 ${
+                  activeModule === key
+                    ? `bg-gradient-to-r ${module.color} text-white shadow-lg`
+                    : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+                }`}
+              >
+                <IconComponent className="w-8 h-8 mx-auto mb-2" />
+                <div className="font-semibold text-sm">{module.name}</div>
+                <div className="text-xs opacity-80 mt-1">{module.description}</div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Module-Specific Controls */}
+        <div className="bg-gray-800 rounded-lg p-6 mb-6">
+          <h3 className="text-xl font-semibold mb-4 text-cyan-400">
+            {modules[activeModule].name} Controls
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {activeModule === 'tunneling' && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Breathing Frequency: {tunnelingFreq.toFixed(3)}
+                  </label>
+                  <input
+                    type="range"
+                    min="0.01"
+                    max="0.20"
+                    step="0.005"
+                    value={tunnelingFreq}
+                    onChange={(e) => setTunnelingFreq(parseFloat(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Barrier Height: {barrierHeight.toFixed(2)}
+                  </label>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="3.0"
+                    step="0.1"
+                    value={barrierHeight}
+                    onChange={(e) => setBarrierHeight(parseFloat(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+              </>
+            )}
+            
+            {activeModule === 'entanglement' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Well Width: {entanglementWellWidth.toFixed(1)}
+                </label>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="3.0"
+                  step="0.1"
+                  value={entanglementWellWidth}
+                  onChange={(e) => setEntanglementWellWidth(parseFloat(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+            )}
+            
+            {activeModule === 'bec' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Temperature: {becTemperature}K
+                </label>
+                <input
+                  type="range"
+                  min="1"
+                  max="500"
+                  step="10"
+                  value={becTemperature}
+                  onChange={(e) => setBecTemperature(parseInt(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+            )}
+            
+            {activeModule === 'superconductor' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Cooper Pair Strength: {cooperPairStrength.toFixed(2)}
+                </label>
+                <input
+                  type="range"
+                  min="0.1"
+                  max="1.0"
+                  step="0.05"
+                  value={cooperPairStrength}
+                  onChange={(e) => setCooperPairStrength(parseFloat(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+            )}
+            
+            {activeModule === 'consciousness' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Validator Species
+                </label>
+                <select
+                  value={validatorSpecies}
+                  onChange={(e) => setValidatorSpecies(e.target.value)}
+                  className="w-full bg-gray-700 text-white p-2 rounded"
+                >
+                  <option value="Echo Royalty">Echo Royalty 👑</option>
+                  <option value="Entropy Nomad">Entropy Nomad 🧭</option>
+                  <option value="Curvature Survivor">Curvature Survivor 🛡️</option>
+                  <option value="Rebound Rebel">Rebound Rebel ⚡</option>
+                  <option value="Echo Drifter">Echo Drifter 🌪️</option>
+                </select>
+              </div>
+            )}
+            
+            {activeModule === 'stellar' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Spin Rate: {stellarSpinRate} rad/s
+                </label>
+                <input
+                  type="range"
+                  min="500"
+                  max="5000"
+                  step="100"
+                  value={stellarSpinRate}
+                  onChange={(e) => setStellarSpinRate(parseInt(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+            )}
+            
+            {activeModule === 'fusion' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Particle Density: {fusionConfinement}
+                </label>
+                <input
+                  type="range"
+                  min="200"
+                  max="2000"
+                  step="100"
+                  value={fusionConfinement}
+                  onChange={(e) => setFusionConfinement(parseInt(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Main Experiment Canvas */}
+        <div className="bg-gray-800 rounded-lg p-6">
+          <div className="mb-4">
+            <h2 className={`text-2xl font-bold bg-gradient-to-r ${modules[activeModule].color} bg-clip-text text-transparent`}>
+              {modules[activeModule].name}
+            </h2>
+            <p className="text-gray-300">{modules[activeModule].description}</p>
+          </div>
+          
+          <div className="bg-gray-900 rounded-lg p-4">
+            <canvas
+              ref={canvasRef}
+              width={800}
+              height={500}
+              className="w-full border border-gray-700 rounded"
+            />
+          </div>
+          
+          {/* Live Data Display */}
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-gray-700 p-3 rounded">
+              <div className="text-xs text-gray-400">MBT Field Strength</div>
+              <div className="text-lg font-mono text-cyan-400">
+                {(curvatureStrength * memoryPersistence * 100).toFixed(1)}%
+              </div>
+            </div>
+            
+            <div className="bg-gray-700 p-3 rounded">
+              <div className="text-xs text-gray-400">Quantum Coherence</div>
+              <div className="text-lg font-mono text-green-400">
+                {(Math.cos(time * 0.02) * 50 + 50).toFixed(1)}%
+              </div>
+            </div>
+            
+            <div className="bg-gray-700 p-3 rounded">
+              <div className="text-xs text-gray-400">Energy State</div>
+              <div className="text-lg font-mono text-yellow-400">
+                {(resistanceFactor * 42.7).toFixed(1)} units
+              </div>
+            </div>
+            
+            <div className="bg-gray-700 p-3 rounded">
+              <div className="text-xs text-gray-400">Success Rate</div>
+              <div className="text-lg font-mono text-purple-400">
+                {(85 + Math.sin(time * 0.03) * 10).toFixed(1)}%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Experimental Log */}
+        <div className="mt-6 bg-gray-800 rounded-lg p-6">
+          <h3 className="text-xl font-semibold mb-4 text-cyan-400">Experiment Log</h3>
+          <div className="bg-gray-900 p-4 rounded font-mono text-sm space-y-1 h-40 overflow-y-auto">
+            <div className="text-green-400">[{String(time).padStart(6, '0')}] Quantum system initialized</div>
+            <div className="text-cyan-400">[{String(time + 1).padStart(6, '0')}] MBT field parameters locked</div>
+            <div className="text-yellow-400">[{String(time + 2).padStart(6, '0')}] {modules[activeModule].name} experiment running</div>
+            <div className="text-blue-400">[{String(time + 3).padStart(6, '0')}] Curvature coupling: {curvatureStrength.toFixed(3)}</div>
+            <div className="text-purple-400">[{String(time + 4).padStart(6, '0')}] Memory persistence: {memoryPersistence.toFixed(3)}</div>
+            {isRunning && (
+              <>
+                <div className="text-green-400">[{String(time + 5).padStart(6, '0')}] Real-time evolution active</div>
+                <div className="text-cyan-400">[{String(time + 6).padStart(6, '0')}] Quantum effects observable</div>
+                <div className="text-yellow-400">[{String(time + 7).padStart(6, '0')}] MBT validation in progress...</div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Access Presets */}
+        <div className="mt-6 bg-gray-800 rounded-lg p-6">
+          <h3 className="text-xl font-semibold mb-4 text-cyan-400">Quick Presets</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <button
+              onClick={() => {
+                setCurvatureStrength(2.5);
+                setMemoryPersistence(0.9);
+                setTunnelingFreq(0.08);
+                setActiveModule('tunneling');
+              }}
+              className="bg-blue-600 hover:bg-blue-700 p-3 rounded text-sm font-semibold transition-all"
+            >
+              🎯 Optimal Tunneling
+            </button>
+            
+            <button
+              onClick={() => {
+                setCurvatureStrength(1.8);
+                setMemoryPersistence(0.7);
+                setEntanglementWellWidth(1.5);
+                setActiveModule('entanglement');
+              }}
+              className="bg-purple-600 hover:bg-purple-700 p-3 rounded text-sm font-semibold transition-all"
+            >
+              🔗 Max Entanglement
+            </button>
+            
+            <button
+              onClick={() => {
+                setBecTemperature(300);
+                setMemoryPersistence(0.85);
+                setCurvatureStrength(1.2);
+                setActiveModule('bec');
+              }}
+              className="bg-green-600 hover:bg-green-700 p-3 rounded text-sm font-semibold transition-all"
+            >
+              ❄️ Room-Temp BEC
+            </button>
+            
+            <button
+              onClick={() => {
+                setCooperPairStrength(0.5);
+                setMemoryPersistence(0.95);
+                setCurvatureStrength(2.0);
+                setActiveModule('superconductor');
+              }}
+              className="bg-yellow-600 hover:bg-yellow-700 p-3 rounded text-sm font-semibold transition-all"
+            >
+              ⚡ Zero Resistance
+            </button>
+          </div>
+        </div>
+        
+        {/* Footer */}
+        <div className="mt-8 text-center text-gray-400">
+          <p>Powered by Motion = Being Theory • The Ultimate Quantum Physics Playground</p>
+          <p className="text-sm mt-2">
+            "If it's quantum, we can do it!" - From tunneling to consciousness evolution
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default QuantumZone;
