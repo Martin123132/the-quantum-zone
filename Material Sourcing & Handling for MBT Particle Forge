@@ -1,0 +1,46 @@
+Material Sourcing & Handling for MBT Particle Forge
+
+1. Strategic Sourcing of Seed Materials
+
+Goal:
+Ensure reliable, high-purity starting materials for quantum chip experiments—both for immediate proof-of-concept (graphene, transition metal dichalcogenides, silicon) and for more ambitious MBT particle synthesis.
+
+A. Immediate-Use Materials
+•	Graphene:
+o	Vendors: Graphenea, ACS Materials, 2D Semiconductors
+o	Form: Monolayer films on copper/nickel foil or Si/SiO₂ wafers
+o	Purity: ≥99.99%, minimal grain boundaries/defects
+•	TMDs (MoS₂, WS₂, etc.):
+o	Vendors: HQ Graphene, 2D Semiconductors
+o	Form: Mechanical exfoliation crystals or CVD-grown films
+o	Purity: ≥99.99%
+•	Silicon (for benchmarking):
+o	Vendors: University wafer suppliers (e.g., UniversityWafer, SiQuest)
+o	Form: 4” or 6” Si wafers, orientation ⟨100⟩ or ⟨111⟩, test-grade
+
+B. Photonic Materials (For Light/Matter Conversion)
+•	Laser Source:
+o	Vendors: Thorlabs, Edmund Optics, Newport
+o	Type: Femtosecond/pulsed or continuous-wave, wavelength tunable
+•	Mirror & Cavity Coatings:
+o	Vendors: CVI Laser Optics, Edmund Optics
+o	Spec: Dielectric or metallic, >99.5% reflectivity, vacuum compatible
+
+2. Handling and Storage
+•	Storage:
+o	Store all 2D materials and sensitive substrates in nitrogen or argon glove boxes if available; otherwise, vacuum-sealed containers.
+o	Avoid direct handling—use tweezers with anti-static coating and clean-room gloves.
+o	Keep materials out of direct sunlight, moisture, and dust at all times.
+•	Contamination Control:
+o	Dedicate workspace and tools to prevent cross-contamination.
+o	Regularly clean vacuum chambers with isopropyl alcohol and bake out to minimise outgassing.
+o	For laser systems, use dust-free wipes and regularly inspect optics for debris.
+
+3. Documentation & Supply Chain Traceability
+•	Record batch numbers and supplier information for every material used.
+•	Keep certificates of analysis for all seed materials to ensure traceability for publication or patenting.
+ 
+Summary Statement:
+
+Robust material sourcing and contamination control are foundational to reproducibility and device performance. The MBT approach is “open-source ready”—all vendors listed are internationally available, and handling protocols are compatible with university, startup, or major industry lab standards. This transparency accelerates both replication and scaling.
+
