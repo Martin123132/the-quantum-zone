@@ -1,0 +1,43 @@
+ 
+MBT Replication Kit: Minimal Instructions
+
+Purpose
+
+Enable anyone with basic optics/lab access to replicate the MBT beam-bending experiment and observe the predicted effect.
+ 
+Bill of Materials (Per Replication Kit)
+•	Laser pointer (Class 1/2, 532nm green or 650nm red preferred)
+•	Optical breadboard/mounts (or DIY clamp fixtures)
+•	Glass or metal vacuum chamber with optical ports (mini bell jar or desiccator with window)
+•	Vacuum pump (rotary vane or hand-pump, down to ~1 mbar)
+•	Motorised rotation stage (manual turntable or low-RPM DC gear-motor and speed controller)
+•	Position-sensitive detector (PSD) or basic USB webcam for beam position tracking
+•	Standard computer (laptop/desktop) with Python and numpy, matplotlib, OpenCV (for analysis)
+•	Laser safety goggles (match laser wavelength)
+•	Acrylic shield (optional but recommended)
+ 
+Assembly & Operation Steps
+1.	Mount laser securely outside vacuum chamber; aim through optical port at detector.
+2.	Align detector (webcam/PSD) opposite laser port.
+3.	Install chamber on rotation stage, ensure balanced and level.
+4.	Seal chamber, evacuate to lowest safe pressure.
+5.	Power on laser, verify beam spot is clearly visible on detector.
+6.	Record beam position with chamber stationary (control baseline).
+7.	Begin rotating chamber (start at 1 RPM, increase as safe).
+8.	Record beam position at each RPM step.
+9.	Return to stationary, re-check baseline.
+10.	Repeat all steps at normal atmospheric pressure for control comparison.
+ 
+Data Collection
+•	Use provided Python script to log beam centroid on each frame.
+•	Output position vs. RPM in spreadsheet (CSV) for later analysis.
+•	Blind analysis is recommended: let software assign “random” labels to runs so users cannot bias results.
+ 
+Replication Success Criteria
+•	Success: Any statistically significant shift in the laser’s position correlated to chamber rotation under vacuum only, NOT present at atmospheric pressure, supports MBT effect.
+•	Null: No RPM-correlated shift beyond noise/error = null result (MBT not supported under current conditions).
+
+
+
+
+
