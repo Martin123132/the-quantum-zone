@@ -1,0 +1,105 @@
+MBT Simulation – Multi-Observer Reality
+
+This simulation demonstrates an MBT-based reality in which two independent observer fields
+perceive and influence the same physical system.
+
+Key Concepts:
+- The primary field ("Reality") evolves with internal memory and motion.
+- Observer A and Observer B each watch the main field and develop their own curvature memory.
+- Feedback loops from both observers shape the evolution of the main field.
+- This demonstrates the MBT concept of intersubjective reality — shared but uniquely interpreted and influenced.
+
+The result is an emergent, evolving system where reality is no longer objective — it is co-shaped
+by the perspectives of multiple conscious agents.
+
+
+# MBT Multi-Observer System – Two Minds Watching and Shaping the Same World
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+# Parameters
+grid_size = 120
+timesteps = 400
+dt = 0.1
+pulse_amplitude = 1.0
+decay_factor = 0.98
+memory_decay = 0.999
+learning_rate = 0.05
+observer_learning = 0.1
+observer_feedback_strength = 0.15  # Reduced strength per observer
+
+# Primary field (Reality)
+field_main = np.zeros((grid_size, grid_size))
+velocity_main = np.zeros_like(field_main)
+memory_main = np.random.rand(grid_size, grid_size) * 0.005
+
+# Observer 1 (Mind A)
+observer1_field = np.zeros_like(field_main)
+observer1_memory = np.zeros_like(field_main)
+
+# Observer 2 (Mind B)
+observer2_field = np.zeros_like(field_main)
+observer2_memory = np.zeros_like(field_main)
+
+# Visualization
+fig, axs = plt.subplots(1, 3, figsize=(15, 6))
+im0 = axs[0].imshow(memory_main, cmap='inferno', vmin=0, vmax=0.05, animated=True)
+im1 = axs[1].imshow(observer1_memory, cmap='plasma', vmin=0, vmax=0.05, animated=True)
+im2 = axs[2].imshow(observer2_memory, cmap='cividis', vmin=0, vmax=0.05, animated=True)
+axs[0].set_title("Reality")
+axs[1].set_title("Observer A")
+axs[2].set_title("Observer B")
+
+def laplacian(Z):
+    return (
+        -4 * Z
+        + np.roll(Z, 1, axis=0) + np.roll(Z, -1, axis=0)
+        + np.roll(Z, 1, axis=1) + np.roll(Z, -1, axis=1)
+    )
+
+def update(frame):
+    global field_main, velocity_main, memory_main
+    global observer1_field, observer1_memory
+    global observer2_field, observer2_memory
+
+    # Inject wave into reality
+    if frame % 15 == 0:
+        y, x = np.random.randint(0, grid_size, size=2)
+        field_main[y, x] = pulse_amplitude
+
+    # Base curvature update
+    lap_main = laplacian(field_main)
+    adaptive_main = 1 + memory_main * learning_rate
+
+    # Feedback from both observers
+    feedback = 1 + (
+        observer1_memory * observer_feedback_strength +
+        observer2_memory * observer_feedback_strength
+    )
+
+    velocity_main += lap_main * dt * adaptive_main * feedback
+    velocity_main *= decay_factor
+    field_main += velocity_main * dt
+    memory_main = memory_main * memory_decay + np.abs(field_main) * (1 - memory_decay)
+
+    # Observer A update
+    obs1_input = laplacian(np.abs(field_main))
+    observer1_field += obs1_input * observer_learning
+    observer1_field *= decay_factor
+    observer1_memory = observer1_memory * memory_decay + np.abs(observer1_field) * (1 - memory_decay)
+
+    # Observer B update
+    obs2_input = laplacian(np.abs(field_main))
+    observer2_field += obs2_input * observer_learning
+    observer2_field *= decay_factor
+    observer2_memory = observer2_memory * memory_decay + np.abs(observer2_field) * (1 - memory_decay)
+
+    im0.set_array(memory_main)
+    im1.set_array(observer1_memory)
+    im2.set_array(observer2_memory)
+    return [im0, im1, im2]
+
+ani = FuncAnimation(fig, update, frames=timesteps, interval=50, blit=True)
+plt.show()
+
