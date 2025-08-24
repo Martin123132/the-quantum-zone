@@ -1,0 +1,68 @@
+MBT-Based Atomic Structure Simulation – 
+This document contains the an evolution of the MBT-based atomic structure simulation code. It includes the simulated curvature field, rotational dynamics, and early-stage vector field interpretation potentially analogous to magnetic behavior. This code assumes a motion-resistance interpretation of matter and force.
+Python Code:
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Grid and time settings
+size = 200
+center = size // 2
+steps = 200
+decay = 0.004
+
+curvature_field = np.zeros((size, size))
+vx = np.zeros((size, size))
+vy = np.zeros((size, size))
+
+# Constants (arbitrary MBT analogues)
+nucleus_strength = 5.0
+rotation_speed = 0.15
+
+# Initial curvature "nucleus"
+for y in range(size):
+    for x in range(size):
+        dx = x - center
+        dy = y - center
+        r = np.sqrt(dx**2 + dy**2) + 1e-3
+        curvature_field[y, x] += nucleus_strength * np.exp(-r / 4)
+
+# Time evolution loop
+for step in range(steps):
+    new_field = curvature_field.copy()
+    for y in range(1, size-1):
+        for x in range(1, size-1):
+            laplacian = (
+                curvature_field[y+1, x] + curvature_field[y-1, x] +
+                curvature_field[y, x+1] + curvature_field[y, x-1] -
+                4 * curvature_field[y, x]
+            )
+            new_field[y, x] += laplacian * 0.05 - curvature_field[y, x] * decay
+
+    curvature_field = new_field
+
+    # Update velocity fields
+    for y in range(size):
+        for x in range(size):
+            dx = x - center
+            dy = y - center
+            r = np.sqrt(dx**2 + dy**2) + 1e-3
+            vx[y, x] = -rotation_speed * dy / r
+            vy[y, x] = rotation_speed * dx / r
+
+# Plotting final vector field and curvature
+plt.figure(figsize=(10, 10))
+plt.imshow(curvature_field, cmap='inferno', origin='lower')
+skip = 5
+plt.quiver(
+    np.arange(0, size, skip),
+    np.arange(0, size, skip),
+    vx[::skip, ::skip],
+    vy[::skip, ::skip],
+    color='cyan',
+    scale=20
+)
+plt.title('Evolved MBT Curvature with Rotational Vector Field')
+plt.colorbar(label='Curvature Intensity')
+plt.show()
+
