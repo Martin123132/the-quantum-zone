@@ -1,0 +1,31 @@
+MBT-Based Electron Orbital Simulation
+This simulation shows an electron's s-orbital distribution generated using MBT-inspired decay (motion-based tension falloff).
+ 
+Code Used:
+
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+def mbt_s_orbital_density(x, y, z, alpha=1.0):
+    r = np.sqrt(x**2 + y**2 + z**2)
+    return np.exp(-alpha * r)
+
+grid_size = 100
+lim = 5
+x = np.linspace(-lim, lim, grid_size)
+y = np.linspace(-lim, lim, grid_size)
+z = np.linspace(-lim, lim, grid_size)
+X, Y, Z = np.meshgrid(x, y, z)
+
+density = mbt_s_orbital_density(X, Y, Z)
+threshold = 0.3
+mask = density > threshold
+
+x_vals, y_vals, z_vals = X[mask], Y[mask], Z[mask]
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(x_vals, y_vals, z_vals, c=density[mask], cmap='plasma', s=1)
+plt.show()
+
