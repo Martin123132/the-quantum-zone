@@ -1,0 +1,49 @@
+MBT-Based Particle Simulation Code (Evolving Model)
+1. Initial Setup and Libraries
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+2. Particle Initialization
+# Parameters
+nucleus_radius = 0.5
+electron_shell_radius = 2
+num_protons = 4
+num_neutrons = 4
+num_electrons = 4
+
+# Function to generate particle positions on a sphere
+def generate_sphere_points(n, radius):
+    points = []
+    for i in range(n):
+        theta = np.random.uniform(0, 2*np.pi)
+        phi = np.random.uniform(0, np.pi)
+        x = radius * np.sin(phi) * np.cos(theta)
+        y = radius * np.sin(phi) * np.sin(theta)
+        z = radius * np.cos(phi)
+        points.append((x, y, z))
+    return np.array(points)
+3. Generate Particle Positions
+protons = generate_sphere_points(num_protons, nucleus_radius)
+neutrons = generate_sphere_points(num_neutrons, nucleus_radius)
+electrons = generate_sphere_points(num_electrons, electron_shell_radius)
+4. Plotting the Atomic Structure (3D)
+fig = plt.figure(figsize=(8, 8))
+ax = fig.add_subplot(111, projection='3d')
+ax.set_title('MBT-Based 3D Atom Model')
+
+# Plot nucleus
+ax.scatter(*zip(*protons), color='red', label='Protons')
+ax.scatter(*zip(*neutrons), color='blue', label='Neutrons')
+
+# Plot electrons
+ax.scatter(*zip(*electrons), color='green', label='Electrons')
+
+# Aesthetic settings
+ax.set_xlim([-3, 3])
+ax.set_ylim([-3, 3])
+ax.set_zlim([-3, 3])
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+ax.legend()
+plt.show()
